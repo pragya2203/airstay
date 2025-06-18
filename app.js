@@ -17,7 +17,7 @@ const passport = require("passport");
 const LocalStrategy = require("passport-local");
 const User = require("./models/user.js"); // Mongoose User model
 const multer = require('multer');
-const { storage } = require('./cloudConfig');
+const { storage } = require('./CloudConfig');
 const upload = multer({ storage });
 
 
