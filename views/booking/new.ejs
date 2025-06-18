@@ -1,0 +1,155 @@
+<% layout("layouts/boilerplate") %>
+
+<div class="container my-5">
+  <h2 class="mb-4">Book: <%= listing.title %></h2>
+
+  <form 
+    action="/listings/<%= listing._id %>/bookings" 
+    method="POST" 
+    novalidate 
+    class="needs-validation card p-4 shadow-sm"
+    id="bookingForm"
+  >
+    <!-- Check-in -->
+    <div class="mb-3">
+      <label class="form-label">Check-in Date</label>
+      <input 
+        type="date" 
+        name="booking[checkIn]" 
+        class="form-control" 
+        id="checkIn" 
+        required
+      >
+      <div class="invalid-feedback">Please select a check-in date.</div>
+    </div>
+
+    <!-- Check-out -->
+    <div class="mb-3">
+      <label class="form-label">Check-out Date</label>
+      <input 
+        type="date" 
+        name="booking[checkOut]" 
+        class="form-control" 
+        id="checkOut" 
+        required
+      >
+    </div>
+
+    <!-- Guests -->
+    <div class="mb-3">
+      <label class="form-label">Number of Guests</label>
+      <input 
+        type="number" 
+        name="booking[guests]" 
+        class="form-control" 
+        id="guests" 
+        min="1" 
+        required
+      >
+      <div class="invalid-feedback">Please enter number of guests.</div>
+    </div>
+
+    <!-- Total Price (text only) -->
+    <div class="mb-3">
+      <label class="form-label">Total Price</label>
+      <p class="fs-5 fw-semibold text-danger" id="totalPriceText">₹ 0</p>
+    </div>
+
+    <!-- Razorpay Pay Button -->
+    <button type="button" id="rzp-button" class="btn btn-danger">Pay & Confirm</button>
+  </form>
+</div>
+
+<!-- Razorpay Script -->
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<script>
+  const pricePerNight = <%= listing.price %>;
+  const checkInInput = document.getElementById('checkIn');
+  const checkOutInput = document.getElementById('checkOut');
+  const totalPriceText = document.getElementById('totalPriceText');
+  const rzpButton = document.getElementById('rzp-button');
+  const bookingForm = document.getElementById('bookingForm');
+
+  let total = 0;
+
+  function calculateTotalPrice() {
+    const checkInDate = new Date(checkInInput.value);
+    const checkOutDate = new Date(checkOutInput.value);
+
+    if (!isNaN(checkInDate) && !isNaN(checkOutDate)) {
+      const days = (checkOutDate - checkInDate) / (1000 * 60 * 60 * 24);
+
+      if (days <= 0) {
+        total = 0;
+        totalPriceText.textContent = "Check-out must be after check-in.";
+      } else {
+        total = days * pricePerNight;
+        totalPriceText.textContent = `₹ ${total.toLocaleString("en-IN")}`;
+      }
+    } else {
+      total = 0;
+      totalPriceText.textContent = "Select dates to see total";
+    }
+  }
+
+  checkInInput.addEventListener('change', calculateTotalPrice);
+  checkOutInput.addEventListener('change', calculateTotalPrice);
+
+  rzpButton.addEventListener('click', async function (e) {
+    e.preventDefault();
+    calculateTotalPrice();
+
+    const checkIn = checkInInput.value;
+    const checkOut = checkOutInput.value;
+
+    if (!checkIn || !checkOut || total === 0) {
+      alert("Please select valid check-in and check-out dates.");
+      return;
+    }
+
+    // Check date availability before payment
+    const availabilityRes = await fetch(`/listings/<%= listing._id %>/bookings/check-availability`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ checkIn, checkOut })
+    });
+
+    const availability = await availabilityRes.json();
+
+    if (!availability.available) {
+      alert(availability.message || "Selected dates are not available.");
+      return;
+    }
+
+    // ✅ Create Razorpay Order
+    const response = await fetch("/payment/create-order", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ amount: total })
+    });
+
+    const order = await response.json();
+
+    const options = {
+      key: "<%= razorpayKey %>",
+      amount: order.amount,
+      currency: "INR",
+      name: "Airstay",
+      description: "Booking Payment",
+      order_id: order.id,
+      handler: function (response) {
+        alert("Payment Successful!");
+        bookingForm.submit(); // Submit only after payment
+      },
+      prefill: {
+        name: "<%= currUser.username %>",
+        email: "<%= currUser.email || '' %>"
+      },
+      theme: { color: "#fe424d" }
+    };
+
+    const rzp = new Razorpay(options);
+    rzp.open();
+  });
+</script>

@@ -1,0 +1,52 @@
+<% layout("layouts/boilerplate") %>
+
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+      <div class="card shadow-lg rounded-4">
+        <div class="card-body p-4">
+          <h2 class="text-center mb-4 fw-bold">Log In</h2>
+
+          <form action="/login" method="POST" class="needs-validation" novalidate>
+            <!-- Username -->
+            <div class="mb-3">
+              <label for="username" class="form-label">Username</label>
+              <input 
+                id="username" 
+                name="username" 
+                type="text" 
+                class="form-control" 
+                placeholder="Enter your username"
+                required
+              />
+            </div>
+
+            <!-- Password -->
+            <div class="mb-4">
+              <label for="password" class="form-label">Password</label>
+              <input 
+                id="password" 
+                name="password" 
+                type="password" 
+                class="form-control" 
+                placeholder="Enter your password"
+                required
+              />
+            </div>
+
+            <!-- Custom Color Button -->
+            <div class="d-grid">
+              <button class="btn btn-lg rounded-pill" style="background-color: #fe424d; color: white;">
+                Log In
+              </button>
+            </div>
+          </form>
+
+          <p class="text-center mt-3 mb-0">
+            Don't have an account? <a href="/signup" class="text-decoration-none">Sign up</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

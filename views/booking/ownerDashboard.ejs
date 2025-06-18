@@ -1,0 +1,31 @@
+<% layout("layouts/boilerplate") %>
+<div class="container my-5">
+  <h2 class="mb-4 text-center">Bookings on Your Listings</h2>
+
+  <% if (bookings.length === 0) { %>
+    <div class="alert alert-danger text-center">
+      No bookings have been made on your listings yet.
+    </div>
+  <% } else { %>
+    <div class="row">
+      <% bookings.forEach(booking => { %>
+        <div class="col-md-6 mb-4">
+          <div class="card shadow-sm h-100">
+            <div class="card-body">
+              <% if (booking.listing) { %>
+                <h5 class="card-title"><%= booking.listing.title %></h5>
+              <% } else { %>
+                <h5 class="card-title text-danger">[Deleted Listing]</h5>
+              <% } %>
+              <p class="card-text">Booked by: <%= booking.user?.username || "Unknown" %></p>
+              <p class="card-text">Guests: <%= booking.guests %></p>
+              <p class="card-text">Check-in: <%= booking.checkIn.toDateString() %></p>
+              <p class="card-text">Check-out: <%= booking.checkOut.toDateString() %></p>
+              <p class="card-text fw-semibold text-danger">₹ <%= booking.totalPrice?.toLocaleString("en-IN") %></p>
+            </div>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  <% } %>
+</div>

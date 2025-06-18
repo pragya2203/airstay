@@ -1,0 +1,113 @@
+<% layout("layouts/boilerplate") %>
+<div class="container my-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-10">
+
+      <!-- Listing Title -->
+      <h2 class="mb-4 fw-bold text-center"><%= list.title %></h2>
+
+      <!-- Listing Card -->
+      <div class="card shadow-lg mb-5 border-0 rounded-4 overflow-hidden">
+        <img src="<%= list.image.url %>" class="card-img-top object-fit-cover" style="max-height: 500px;" alt="Listing Image">
+        <div class="card-body px-4 py-3">
+          <p class="text-muted mb-2"><i>Owned by <%= list.owner.username %></i></p>
+          <p class="fs-5"><%= list.description %></p>
+          <p class="fw-semibold">Price: ₹ <%= list.price.toLocaleString("en-IN") %></p>
+          <p class="text-muted"><%= list.location %>, <%= list.country %></p>
+        </div>
+      </div>
+
+      <!-- Book Now Button -->
+      <% if (currUser && !list.owner._id.equals(currUser._id)) { %>
+        <div class="d-flex justify-content-end mb-4">
+            <a href="/listings/<%= list._id %>/bookings/new" class="btn btn-danger">Book</a>
+        </div>
+        <% } %>
+
+      <!-- Edit/Delete Buttons -->
+      <% if (currUser && list.owner._id.equals(currUser._id)) { %>
+        <div class="d-flex gap-3 justify-content-end mb-4">
+          <a href="/listings/<%= list._id %>/edit" class="btn btn-danger px-4">Edit</a>
+          <form action="/listings/<%= list._id %>?_method=DELETE" method="POST">
+            <button class="btn btn-dark px-4">Delete</button>
+          </form>
+        </div>
+      <% } %>
+
+      <!-- Review Form -->
+      <% if (currUser) { %>
+        <div class="card shadow-sm border-0 mb-5 p-4">
+          <h4 class="mb-3">Leave a Review</h4>
+          <form action="/listings/<%= list._id %>/reviews" method="POST" novalidate>
+            <div class="mb-3">
+              <label class="form-label">Rating</label>
+              <fieldset class="starability-basic">
+                <% for(let i=1; i<=5; i++) { %>
+                  <input type="radio" id="rate-<%= i %>" name="review[rating]" value="<%= i %>">
+                  <label for="rate-<%= i %>" title="<%= ['Terrible','Not good','Average','Very good','Amazing'][i-1] %>"><%= i %> star</label>
+                <% } %>
+              </fieldset>
+            </div>
+            <div class="mb-3">
+              <label for="comment" class="form-label">Comment</label>
+              <textarea class="form-control" name="review[comment]" id="comment" rows="3" required></textarea>
+              <div class="invalid-feedback">Please enter a comment.</div>
+            </div>
+            <button class="btn btn-outline-dark">Submit</button>
+          </form>
+        </div>
+      <% } %>
+
+      <!-- All Reviews -->
+      <% if (list.reviews.length > 0) { %>
+        <h4 class="mb-3">All Reviews</h4>
+        <div class="row">
+          <% for (let review of list.reviews) { %>
+            <div class="col-md-6 mb-4">
+              <div class="card h-100 border-1 border-dark shadow-sm p-3">
+                <p class="fw-semibold mb-1">@<%= review.author.username %></p>
+                <p class="starability-result mb-2" data-rating="<%= review.rating %>"></p>
+                <p class="mb-2"><%= review.comment %></p>
+                <% if (currUser && review.author._id.equals(currUser._id)) { %>
+                  <form action="/listings/<%= list._id %>/reviews/<%= review._id %>?_method=DELETE" method="POST">
+                    <button class="btn btn-sm btn-outline-dark">Delete</button>
+                  </form>
+                <% } %>
+              </div>
+            </div>
+          <% } %>
+        </div>
+      <% } %>
+
+      <!-- Map Section -->
+      <div class="card shadow-sm border-0 mt-5">
+        <div class="card-body">
+          <h4 class="mb-3">Where you'll be</h4>
+          <div id="map" style="height: 400px; border-radius: 10px;"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+  mapboxgl.accessToken = "<%= mapboxToken %>";
+
+  const coordinates = <%- JSON.stringify(list.geometry.coordinates) %>;
+
+  const map = new mapboxgl.Map({
+    container: 'map',
+    style: 'mapbox://styles/mapbox/streets-v12',
+    center: coordinates,
+    zoom: 9
+  });
+
+  const popup = new mapboxgl.Popup({ offset: 25 })
+    .setHTML("<p>Exact location provided after booking</p>");
+
+  new mapboxgl.Marker({ color: "red" })
+    .setLngLat(coordinates)
+    .setPopup(popup) // ✅ Attach the popup object here
+    .addTo(map);
+</script>

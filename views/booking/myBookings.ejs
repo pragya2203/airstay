@@ -1,0 +1,41 @@
+<% layout("layouts/boilerplate") %>
+
+<div class="container my-5">
+  <h2 class="mb-4 text-center">My Bookings</h2>
+
+  <% if (bookings.length === 0) { %>
+    <div class="alert alert-danger text-center">
+      You haven't made any bookings yet.
+    </div>
+  <% } else { %>
+    <div class="row">
+      <% bookings.forEach(booking => { %>
+        <div class="col-md-6 mb-4">
+          <div class="card h-100 shadow-sm border-0 rounded-4 overflow-hidden">
+            <img src="<%= booking.listing.image.url %>" class="card-img-top" style="max-height: 250px; object-fit: cover;" alt="Listing image">
+            <div class="card-body">
+            <h5 class="card-title">
+                <%= booking.listing.title %>
+            </h5>
+            <p class="card-text text-muted mb-1"><i>
+                    <%= booking.listing.location %>, <%= booking.listing.country %>
+                </i></p>
+            <p class="card-text mb-1">Guests: <%= booking.guests %>
+            </p>
+            <p class="card-text mb-1">Check-in: <%= booking.checkIn.toDateString() %>
+            </p>
+            <p class="card-text mb-1">Check-out: <%= booking.checkOut.toDateString() %>
+            </p>
+            <p class="card-text fw-semibold text-danger">Total: ₹ <%= booking.totalPrice.toLocaleString("en-IN") %>
+            </p>
+            <form action="/listings/<%= booking.listing._id %>/bookings/<%= booking._id %>?_method=DELETE" method="POST">
+                <button class="btn btn-outline-danger btn-sm mt-2">Cancel Booking</button>
+            </form>
+
+            </div>
+            </div>
+        </div>
+      <% }) %>
+    </div>
+  <% } %>
+</div>

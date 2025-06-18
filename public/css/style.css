@@ -1,0 +1,185 @@
+body {
+    font-family: "Plus Jakarta Sans", sans-serif !important;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.container {
+    flex: 1;
+}
+
+.navbar {
+    height: 4rem;
+    background-color: white;
+}
+
+.navbar-brand i {
+    color: #fe424d;
+    font-size: 2rem;
+}
+
+.nav-link {
+    color: #222222 !important;
+}
+
+/* Footer */
+.f-info {
+    text-align: center;
+    background-color: #ebebeb;
+    padding: 2rem 0;
+    font-size: 0.95rem;
+    color: #484848;
+}
+
+.f-info-socials,
+.f-info-brand,
+.f-info-links {
+    margin: 0.8rem 0;
+}
+
+.f-info-socials i {
+    font-size: 1.3rem;
+    margin: 0 0.7rem;
+    color: #484848;
+    transition: color 0.3s;
+}
+
+.f-info-socials i:hover {
+    color: #fe424d;
+}
+
+.f-info-links a {
+    text-decoration: none;
+    color: #484848;
+    margin: 0 0.8rem;
+    transition: color 0.3s;
+}
+
+.f-info-links a:hover {
+    color: #fe424d;
+}
+
+/* Cards – no hover effect */
+.card {
+    border: none !important;
+    margin-bottom: 2rem;
+    border-radius: 1rem;
+    overflow: hidden;
+}
+
+.card-img-top {
+    border-radius: 1rem !important;
+    width: 100% !important;
+    object-fit: cover !important;
+}
+
+.card-body {
+    padding: 0 !important;
+    margin-top: 0.5rem;
+}
+
+.card-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.card p {
+    color: #717171;
+    font-size: 0.95rem;
+}
+
+/* Show page */
+.show-img {
+    height: 50vh;
+}
+
+/* Review card */
+.review-card {
+    border: 1px solid #000;
+    background-color: white;
+}
+
+/* Map */
+#map {
+    height: 50%;
+    width: 100%;
+}
+
+
+/* index */
+body {
+    margin: 0;
+  }
+
+  .filters-container {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    margin: 1rem 0;
+  }
+
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2.5rem;
+  }
+
+  .filter {
+    text-align: center;
+    opacity: 0.7;
+    transition: opacity 0.3s ease;
+  }
+
+  .filter:hover {
+    opacity: 1;
+    cursor: pointer;
+  }
+
+  .filter p {
+    font-size: 0.8rem;
+    margin-top: 0.25rem;
+  }
+
+  .tax-info {
+    display: none;
+  }
+
+  .show-tax {
+    display: inline !important;
+  }
+
+  .listing-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .listing-card:hover {
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+    z-index: 1;
+  }
+
+  .tax-toggle {
+    margin-left: auto;
+    border-radius: 30px;
+    background-color: #f8f9fa;
+    height: 50px;
+    width: 300px;
+  }
+
+  @media (max-width: 768px) {
+    .filters-container {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+
+    .tax-toggle {
+      margin-left: 0;
+      width: 100%;
+      justify-content: flex-start;
+    }
+  }
+
+        
